@@ -1,0 +1,45 @@
+<h1>Ma Boutique</h1>
+<input type="text" id="nomArticle" placeholder="Nom">
+<input type="number" id="prix" placeholder="Prix">
+<button id="btnAjout">Ajouter article</button>
+<div id="listeArticles"></div> <!-- Ajoute cette ligne après le bouton -->
+<script type="module">
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+    
+    const db = getDatabase();
+    const uid = getAuth().currentUser.uid;
+
+    document.getElementById('btnAjout').onclick = () => {
+        push(ref(db, 'boutiques/' + uid + '/articles/'), {
+            nom: document.getElementById('nomArticle').value,
+            prix: document.getElementById('prix').value
+        }).then(() => alert("Produit ajouté !"));
+ <script type="module">
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+    const db = getDatabase();
+    const uid = getAuth().currentUser.uid;
+
+    // 1. Fonction pour ajouter
+    document.getElementById('btnAjout').onclick = () => {
+        push(ref(db, 'boutiques/' + uid + '/articles/'), {
+            nom: document.getElementById('nomArticle').value,
+            prix: document.getElementById('prix').value
+        }).then(() => alert("Produit ajouté !"));
+    };
+
+    // 2. Fonction pour LIRE et afficher les produits (Le code que tu voulais placer)
+    onValue(ref(db, 'boutiques/' + uid + '/articles/'), (snapshot) => {
+        const liste = document.getElementById('listeArticles');
+        liste.innerHTML = "<h2>Mes articles :</h2>"; // Titre
+        
+        const data = snapshot.val();
+        for (let id in data) {
+            liste.innerHTML += `<p>${data[id].nom} - ${data[id].prix} FC</p>`;
+        }
+    });
+</script>
+    };
+</script>

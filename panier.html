@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Panier | Karnash</title>
+    <style>
+        body { font-family: 'Poppins', sans-serif; padding: 20px; background: #f9f8fa; }
+        .panier-container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .btn-whatsapp { width: 100%; padding: 15px; background: #25d366; color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="panier-container">
+    <h1>Ton Panier</h1>
+    <div id="liste-panier"></div>
+    <button onclick="envoyerCommandeWhatsApp()" class="btn-whatsapp">
+        Finaliser la commande sur WhatsApp
+    </button>
+</div>
+
+<script>
+    // 1. Afficher les articles au chargement
+    function afficherPanier() {
+        let panier = JSON.parse(localStorage.getItem('panier')) || [];
+        let liste = document.getElementById('liste-panier');
+        
+        if (panier.length === 0) {
+            liste.innerHTML = "<p>Ton panier est vide.</p>";
+        } else {
+            liste.innerHTML = panier.map(item => `<p>• ${item.nom} - ${item.prix} $</p>`).join('');
+        }
+    }
+
+    // 2. Envoyer sur WhatsApp
+    function envoyerCommandeWhatsApp() {
+        let panier = JSON.parse(localStorage.getItem('panier')) || [];
+        if (panier.length === 0) { alert("Le panier est vide !"); return; }
+        
+        let message = "Bonjour, je souhaite commander : ";
+        panier.forEach(item => {
+            message += "%0A- " + item.nom + " (" + item.prix + "$)";
+        });
+        
+        let telephone = "243XXXXXXXXXX"; // Remplace par ton vrai numéro !
+        window.open(`https://wa.me/${telephone}?text=${message}`, '_blank');
+    }
+
+    afficherPanier();
+</script>
+
+</body>
+</html>

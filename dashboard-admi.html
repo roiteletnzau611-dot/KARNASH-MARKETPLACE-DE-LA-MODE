@@ -1,0 +1,22 @@
+<nav>
+    <a href="#">Vue d'ensemble</a>
+    <a href="#">Valider Boutiques</a>
+    <a href="connexion.html" onclick="auth.signOut()">Déconnexion</a>
+</nav>
+
+<div class="main-content">
+    <h1>Panneau de Contrôle Général</h1>
+    <div id="stats"></div>
+    <div id="listeValidation"></div>
+</div>
+
+<script type="module">
+    // Script pour lister les boutiques en attente
+    import { db } from "./firebase-config.js";
+    import { ref, onValue } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+    onValue(ref(db, 'boutiques/'), (snapshot) => {
+        const data = snapshot.val();
+        // Logique pour afficher uniquement les boutiques avec statut: "en_attente"
+    });
+</script>

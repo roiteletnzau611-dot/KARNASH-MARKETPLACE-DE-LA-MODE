@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merci pour votre achat | Karnash Marketplace</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #1a0933;   
+            --accent-purple: #6a2b83;  
+            --accent-gold: #cca43b;    
+            --bg-light: #f9f8fa;       
+            --white: #ffffff;
+            --text-dark: #2d2438;
+            --text-muted: #796e85;
+            --shadow: 0 4px 15px rgba(26, 9, 51, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+        a { text-decoration: none; }
+
+        .navbar {
+            background-color: var(--white); display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 8%; box-shadow: var(--shadow);
+        }
+        .logo-container { display: flex; align-items: center; gap: 8px; }
+        .logo-img { height: 32px; object-fit: contain; }
+        .logo-text { font-size: 16px; font-weight: 800; color: var(--primary-color); text-transform: uppercase; }
+        .logo-text span { color: var(--accent-gold); }
+
+        .success-container {
+            flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px;
+        }
+
+        .success-card {
+            background-color: var(--white); padding: 40px; border-radius: 16px; box-shadow: var(--shadow);
+            text-align: center; max-width: 500px; width: 100%; border: 1px solid rgba(106, 43, 131, 0.05);
+        }
+
+        .success-icon {
+            font-size: 60px; color: #2ed573; margin-bottom: 20px;
+            animation: scaleUp 0.5s ease-out;
+        }
+
+        .success-card h1 { font-size: 26px; color: var(--primary-color); margin-bottom: 10px; }
+        .success-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
+
+        .order-info {
+            background-color: var(--bg-light); padding: 15px; border-radius: 8px; text-align: left;
+            margin-bottom: 30px; border-left: 4px solid var(--accent-gold);
+        }
+
+        .order-info div { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
+
+        .btn-home {
+            display: inline-block; background: linear-gradient(135deg, var(--accent-purple), #4a1c5c);
+            color: var(--white); padding: 12px 30px; border-radius: 50px; font-weight: 600;
+            box-shadow: 0 4px 15px rgba(106, 43, 131, 0.3); transition: var(--transition);
+        }
+        .btn-home:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(106, 43, 131, 0.5); }
+
+        @keyframes scaleUp {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo-container">
+            <img src="logo.png.jpeg" alt="Karnash Logo" class="logo-img">
+            <a href="index.html" class="logo-text">KARNASH<span>.Marketplace de la mode</span></a>
+        </div>
+    </header>
+
+    <main class="success-container">
+        <div class="success-card">
+            <i class="fa-solid fa-circle-check success-icon"></i>
+            <h1>Commande validée !</h1>
+            <p>Merci pour votre confiance. Le vendeur prépare actuellement votre colis.</p>
+            
+            <div class="order-info">
+                <div><span>Numéro de commande :</span> <strong>#KA-84920</strong></div>
+                <div><span>Mode de paiement :</span> <strong>Mobile Money</strong></div>
+                <div><span>Statut :</span> <strong style="color: var(--accent-gold);">En attente de traitement</strong></div>
+            </div>
+
+            <a href="index.html" class="btn-home"><i class="fa-solid fa-bag-shopping"></i> Continuer mes achats</a>
+        </div>
+    </main>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Remet le compteur à zéro automatiquement dans la mémoire du navigateur
+        localStorage.setItem('compteurPanier', 0);
+        
+        // Met à jour visuellement le badge de la navbar à 0 immédiatement
+        const badge = document.getElementById('cart-count') || document.querySelector('.badge');
+        if (badge) {
+            badge.innerText = 0;
+        }
+    });
+</script>
+
+</body>
+</html>

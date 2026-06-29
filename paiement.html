@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement Sécurisé | Vogue Marketplace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #f4f5f7;
+            --card-bg: #ffffff;
+            --accent-purple: #6c5ce7;
+            --text-color: #2d3436;
+            --success-color: #2ecc71;
+            --border-color: #dfe6e9;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+        }
+        .pay-card {
+            background: var(--card-bg);
+            max-width: 480px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .price-tag {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent-purple);
+            margin: 10px 0;
+        }
+        .method-icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+        .dispatch-box {
+            background: #f8f9fa;
+            border: 1px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 13px;
+        }
+        .dispatch-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .dispatch-row:last-child { margin-bottom: 0; }
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .form-control {
+            width: 100%; padding: 12px; border: 1px solid var(--border-color);
+            border-radius: 8px; font-size: 15px; box-sizing: border-box; outline: none;
+        }
+        .btn-pay {
+            width: 100%; padding: 14px; background: var(--success-color); color: white;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: 0.2s;
+        }
+        .btn-pay:hover { background: #27ae60; }
+        .cancel-link {
+            display: inline-block; margin-top: 15px; color: #7f8c8d; text-decoration: none; font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pay-card">
+        <div id="methodLogo" class="method-icon"></div>
+        <h2 style="margin: 5px 0;">Validation du Paiement</h2>
+        <p style="color: #7f8c8d; margin: 5px 0 15px 0;" id="clientGreeting">Merci pour votre confiance.</p>
+        
+        <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+            <span style="font-size: 13px; color: #7f8c8d; display: block;">Montant Total à Transférer :</span>
+            <div class="price-tag" id="amountToPay">0 $</div>
+        </div>
+
+        <div class="dispatch-box">
+            <span style="font-weight: bold; color: var(--accent-purple); display: block; margin-bottom: 10px;">
+                <i class="fa-solid fa-diagram-project"></i> Répartition de la transaction :
+            </span>
+            <div class="dispatch-row">
+                <span><i class="fa-solid fa-shield-halved"></i> Commission Vogue (5 %) :</span>
+                <span style="font-weight: 600; color: #2ecc71;" id="adminCommission">0.00 $</span>
+            </div>
+            <div class="dispatch-row">
+                <span><i class="fa-solid fa-store"></i> Part du Vendeur (95 %) :</span>
+                <span style="font-weight: 600;" id="vendorShare">0.00 $</span>
+            </div>
+        </div>
+
+        <form id="paymentExecutionForm">
+            <div class="form-group" id="phoneFieldGroup">
+                <label id="phoneLabel">Numéro de compte Mobile Money pour le débit</label>
+                <input type="tel" id="payPhoneNumber" class="form-control" placeholder="Ex: 082XXXXXXX">
+                <small style="color: #95a5a6; margin-top: 5px; display: block;">Le système va initier les deux transferts dès validation de votre code PIN.</small>
+            </div>
+
+            <div class="form-group" id="cashFieldGroup" style="display: none; text-align: center; color: #7f8c8d;">
+                <p><i class="fa-solid fa-hand-holding-dollar" style="font-size: 30px; color: #2ecc71;"></i></p>
+                <p>Paiement cash à la livraison. La commission de 5 % sera déduite du versement final de la boutique.</p>
+            </div>
+
+            <button type="submit" class="btn-pay" id="submitPayBtn">Confirmer le Paiement</button>
+        </form>
+
+        <a href="commande.html" class="cancel-link"><i class="fa-solid fa-chevron-left"></i> Modifier mes infos</a>
+    </div>
+
+    <script>
+        // Récupération des données sauvegardées par la page commande.html
+        const infoAchat = JSON.parse(localStorage.getItem('dernier_achat')) || { total: 0, methode: 'Cash', client: 'Acheteur' };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const totalDuPanier = parseFloat(infoAchat.total) || 0;
+            
+            // 🧮 CALCUL DES POURCENTAGES (5% pour toi, 95% pour le vendeur)
+            const commissionCalculated = (totalDuPanier * 0.05);
+            const vendorShareCalculated = (totalDuPanier * 0.95);
+
+            // Injection des valeurs calculées dans l'interface
+            document.getElementById('amountToPay').innerText = totalDuPanier.toFixed(2) + " $";
+            document.getElementById('adminCommission').innerText = commissionCalculated.toFixed(2) + " $";
+            document.getElementById('vendorShare').innerText = vendorShareCalculated.toFixed(2) + " $";
+            
+            document.getElementById('clientGreeting').innerText = `Merci pour votre achat, ${infoAchat.client}.`;
+            
+            const logoContainer = document.getElementById('methodLogo');
+            const phoneGroup = document.getElementById('phoneFieldGroup');
+            const cashGroup = document.getElementById('cashFieldGroup');
+            const phoneInput = document.getElementById('payPhoneNumber');
+            const btn = document.getElementById('submitPayBtn');
+
+            // Adaptation visuelle selon l'opérateur mobile choisi
+            if (infoAchat.methode === 'Mpesa') {
+                logoContainer.innerHTML = `<i class="fa-solid fa-mobile-screen" style="color: #e74c3c;"></i> <span style="font-size:16px; font-weight:bold; color:#e74c3c; display:block;">M-PESA VODACOM</span>`;
+                phoneInput.required = true;
+            } else if (infoAchat.methode === 'AirtelMoney') {
+                logoContainer.innerHTML = `<i class="fa-solid fa-mobile-screen" style="color: #ff4757;"></i> <span style="font-size:16px; font-weight:bold; color:#ff4757; display:block;">AIRTEL MONEY</span>`;
+                phoneInput.required = true;
+            } else if (infoAchat.methode === 'OrangeMoney') {
+                logoContainer.innerHTML = `<i class="fa-solid fa-mobile-screen" style="color: #ffa500;"></i> <span style="font-size:16px; font-weight:bold; color:#ffa500; display:block;">ORANGE MONEY</span>`;
+                phoneInput.required = true;
+            } else {
+                logoContainer.innerHTML = `<i class="fa-solid fa-money-bill-wave" style="color: #2ecc71;"></i> <span style="font-size:16px; font-weight:bold; color:#2ecc71; display:block;">Paiement Cash</span>`;
+                phoneGroup.style.display = 'none';
+                cashGroup.style.display = 'block';
+                btn.innerText = "Finaliser ma commande";
+            }
+        });
+
+        document.getElementById('paymentExecutionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const totalDuPanier = parseFloat(infoAchat.total) || 0;
+            const comm = (totalDuPanier * 0.05).toFixed(2);
+            const vend = (totalDuPanier * 0.95).toFixed(2);
+
+            if (infoAchat.methode === 'Cash') {
+                alert(`🛒 Commande Enregistrée avec succès !\n\nMontant : ${totalDuPanier} $\n\nRépartition prévue :\n- Votre compte Administrateur : ${comm} $ (5%)\n- Compte de la Boutique : ${vend} $ (95%)`);
+            } else {
+                const phone = document.getElementById('payPhoneNumber').value;
+                alert(`📱 API Mobile Money Initialisée !\n\nLe compte ${phone} a validé le paiement.\n\n⚡ Routage instantané effectué :\n➡️ ${comm} $ transférés directement sur votre compte Administrateur (5%).\n➡️ ${vend} $ transférés sur le compte du Vendeur (95%).`);
+            }
+
+            // Nettoyage complet
+            localStorage.removeItem('panier_vogue');
+            localStorage.removeItem('dernier_achat');
+            
+            // Retour sur l'accueil
+            window.location.href = "index.html";
+        });
+    </script>
+</body>
+</html>

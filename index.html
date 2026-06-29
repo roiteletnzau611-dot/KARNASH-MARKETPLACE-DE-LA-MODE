@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue sur Vogue Marketplace</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #6a2b83, #3d1a4d); 
+        }
+
+        .card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 25px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+            text-align: center; 
+            width: 350px;
+        }
+
+        /* Style du logo */
+        .logo-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px auto;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        h1 { color: #2c3e50; margin-bottom: 5px; font-size: 24px; }
+        p { color: #7f8c8d; margin-bottom: 30px; }
+
+        /* Style des boutons */
+        .btn { 
+            display: block; 
+            width: 100%; 
+            padding: 14px; 
+            margin: 12px 0; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            transition: transform 0.2s, background 0.3s;
+            box-sizing: border-box;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+
+        .btn-connexion { background: #2c3e50; color: white; }
+        .btn-client { background: #27ae60; color: white; }
+        .btn-vendeur { background: #e74c3c; color: white; }
+
+        hr { border: 0; height: 1px; background: #eee; margin: 25px 0; }
+        h3 { color: #555; font-size: 14px; text-transform: uppercase; margin-bottom: 15px; }
+
+        /* Style du lien Admin discret */
+        .admin-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+            text-decoration: none;
+        }
+        .admin-link:hover { color: #6a2b83; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="logo-container">
+            <img src="logo.png" alt="Vogue Marketplace">
+        </div>
+        
+        <h1>Vogue Marketplace</h1>
+        <p>Fashion. Connect. Discover.</p>
+
+        <a href="connexion.html" class="btn btn-connexion">Se connecter</a>
+        
+        <hr>
+        
+        <h3>Créer un compte</h3>
+        <a href="inscription-client.html" class="btn btn-client">Espace Client</a>
+        <a href="inscription-vendeur.html" class="btn btn-vendeur">Espace Vendeur</a>
+
+        <a href="connexion-admin.html" class="admin-link">Accès Administrateur</a>
+    </div>
+
+</body>
+</html>

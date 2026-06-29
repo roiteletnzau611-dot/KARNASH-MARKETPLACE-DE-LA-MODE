@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin | Karnash</title>
+    <style>
+        body { display: flex; font-family: sans-serif; }
+        nav { width: 250px; background: #333; color: white; height: 100vh; padding: 20px; }
+        .main { padding: 40px; width: 100%; }
+        .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; display: flex; justify-content: space-between; }
+        button { background: #25d366; border: none; padding: 5px 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <nav>
+        <h2>KARNASH.ADMIN</h2>
+        <ul>
+            <li>Vue d'ensemble</li>
+            <li>Valider Boutiques</li>
+        </ul>
+    </nav>
+    <div class="main">
+        <h1>Boutiques en attente de validation</h1>
+        <div id="listeValidation">Chargement...</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+        const db = getDatabase(initializeApp({ /* Ta config Firebase ici */ }));
+
+        // Récupérer les boutiques
+        onValue(ref(db, 'boutiques/'), (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('listeValidation');
+            container.innerHTML = "";
+
+            if (data) {
+                Object.keys(data).forEach(id => {
+                    if (data[id].statut === "en_attente") {
+                        container.innerHTML += `
+                            <div class="card">
+                                <span><strong>${data[id].nom}</strong></span>
+                                <button onclick="valider('${id}')">Valider</button>
+                            </div>`;
+                    }
+                });
+            }
+        });
+
+        // Rendre la fonction accessible au bouton
+        window.valider = (id) => {
+            update(ref(db, 'boutiques/' + id), { statut: "active" })
+                .then(() => alert("Boutique activée avec succès !"));
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<input type="text" id="nomBoutique" placeholder="Nom de votre boutique">
+<input type="email" id="email" placeholder="Votre email">
+<input type="password" id="pass" placeholder="Mot de passe">
+<button id="btnInscription">S'inscrire</button>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+    const app = initializeApp({ /* Ta config */ });
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    document.getElementById('btnInscription').onclick = () => {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('pass').value;
+        const nom = document.getElementById('nomBoutique').value;
+
+        // 1. Créer l'authentification
+        createUserWithEmailAndPassword(auth, email, pass).then((userCredential) => {
+            const uid = userCredential.user.uid;
+
+            // 2. Créer la boutique dans la base de données avec le statut "en_attente"
+            set(ref(db, 'boutiques/' + uid), {
+                nom: nom,
+                email: email,
+                statut: "en_attente", // <-- C'est ici que tu verrouilles l'accès
+                dateInscription: new Date().toISOString()
+            }).then(() => {
+                alert("Inscription envoyée ! Un administrateur validera votre boutique.");
+                window.location.href = "attente.html";
+            });
+        });
+    };
+</script>

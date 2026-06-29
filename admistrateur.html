@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <script>
+    // Ce code vérifie si l'utilisateur est connecté et si c'est bien un vendeur
+    if (localStorage.getItem('userRole') !== 'vendeur') {
+        // S'il n'est pas vendeur, on le renvoie immédiatement sur la page de connexion
+        window.location.href = 'connexion.html';
+    }
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin | Karnash Marketplace de la mode</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #1a0933;   
+            --accent-purple: #6a2b83;  
+            --accent-gold: #cca43b;    
+            --bg-light: #f4f3f6;       
+            --text-dark: #2d2438;      
+            --text-muted: #796e85;     
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(26, 9, 51, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-dark); display: flex; }
+        a { text-decoration: none; }
+
+        /* --- SIDEBAR PRIVÉE ADMIN --- */
+        .sidebar {
+            width: 280px; height: 100vh; background-color: var(--primary-color);
+            color: var(--white); padding: 25px 20px; position: fixed; top: 0; left: 0;
+            border-right: 3px solid var(--accent-gold);
+        }
+        .sidebar-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 40px; }
+        .sidebar-brand h2 { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sidebar-brand h2 span { color: var(--accent-gold); }
+
+        .menu-links { list-style: none; }
+        .menu-links li { margin-bottom: 8px; }
+        .menu-links a {
+            display: flex; align-items: center; gap: 15px; padding: 12px 15px;
+            color: #d1c9dc; border-radius: 8px; font-size: 14px; font-weight: 500;
+            transition: var(--transition);
+        }
+        .menu-links a:hover, .menu-links a.active {
+            background-color: var(--accent-purple); color: var(--white);
+        }
+        .admin-badge {
+            background-color: var(--accent-gold); color: var(--primary-color);
+            font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 50px;
+            text-transform: uppercase; margin-left: auto;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { flex: 1; margin-left: 280px; padding: 40px; }
+        
+        .header-dash { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
+        .header-dash h1 { font-size: 26px; font-weight: 800; color: var(--primary-color); }
+        
+        .btn-add-admin {
+            background-color: rgba(204, 164, 59, 0.15); color: var(--accent-gold);
+            border: 1px solid var(--accent-gold); padding: 10px 20px; border-radius: 50px;
+            font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-add-admin:hover { background-color: var(--accent-gold); color: var(--primary-color); }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; margin-bottom: 35px; }
+        .stat-card { background-color: var(--white); padding: 25px; border-radius: 12px; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; }
+        .stat-number { font-size: 26px; font-weight: 800; color: var(--primary-color); margin-top: 5px; }
+        .stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; background-color: #faf9fc; color: var(--accent-purple); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+
+        /* --- CHARTS SECTION GRAPHIK --- */
+        .charts-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; margin-bottom: 35px;
+        }
+        .chart-box {
+            background-color: var(--white); padding: 25px; border-radius: 12px; box-shadow: var(--shadow);
+            border: 1px solid rgba(106, 43, 131, 0.03);
+        }
+        .chart-title { font-size: 15px; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+
+        /* Tables & Boxes */
+        .dash-box { background-color: var(--white); padding: 30px; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 35px; }
+        .box-title { font-size: 16px; font-weight: 700; color: var(--primary-color); margin-bottom: 20px; }
+        
+        .admin-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        .admin-table th { padding: 12px; border-bottom: 2px solid var(--bg-light); color: var(--text-muted); font-weight: 600; }
+        .admin-table td { padding: 15px 12px; border-bottom: 1px solid var(--bg-light); }
+        
+        .status-badge { padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .status-badge.active { background-color: #e3fcef; color: #0e6245; }
+        .status-badge.waiting { background-color: #fff9db; color: #f59f00; }
+
+        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; background-color: #fff0f0; color: #ff4757; }
+        .btn-action:hover { background-color: #ff4757; color: var(--white); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <h2>Karnash<span>.Admin</span></h2>
+            <span class="admin-badge">Super</span>
+        </div>
+        <ul class="menu-links">
+            <li><a href="#" class="active"><i class="fa-solid fa-gauge-high"></i> Vue d'ensemble</a></li>
+            <li><a href="#"><i class="fa-solid fa-store"></i> Valider Boutiques</a></li>
+            <li><a href="#"><i class="fa-solid fa-users"></i> Utilisateurs</a></li>
+            <li><a href="#"><i class="fa-solid fa-chart-line"></i> Flux Financier</a></li>
+         <li style="margin-top: 60px;"><a href="connexion.html" onclick="localStorage.clear();" style="color: #ff4757;"><i class="fa-solid fa-sign-out-alt"></i> Déconnexion</a></li>
+    </div>
+
+    <div class="main-content">
+        <div class="header-dash">
+            <div>
+                <h1>Panneau de Contrôle Général</h1>
+                <p style="color: var(--text-muted); font-size: 13px;">Gestion globale et supervision des flux financiers et boutiques.</p>
+            </div>
+            <a href="creer-compte.html" class="btn-add-admin">
+                <i class="fa-solid fa-user-plus"></i> Ajouter un Admin
+            </a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div>
+                    <p class="stat-label">Volume de ventes (Mois)</p>
+                    <p class="stat-number">1,240 $</p>
+                </div>
+                <div class="stat-icon" style="color: #2ed573;"><i class="fa-solid fa-chart-line"></i></div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <p class="stat-label">Boutiques actives</p>
+                    <p class="stat-number">4</p>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-shop"></i></div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <p class="stat-label">Membres inscrits</p>
+                    <p class="stat-number">186</p>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-user-group"></i></div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-box">
+                <div class="chart-title"><i class="fa-solid fa-calendar-week" style="color: var(--accent-purple);"></i> Ventes Hebdomadaires (7 derniers jours)</div>
+                <canvas id="weeklyChart" height="200"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <div class="chart-title"><i class="fa-solid fa-calendar-days" style="color: var(--accent-gold);"></i> Croissance des Revenus Mensuels (2026)</div>
+                <canvas id="monthlyChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="dash-box">
+            <div class="box-title">Demandes d'ouverture de boutiques</div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nom de la Boutique</th>
+                        <th>Gérant</th>
+                        <th>Contact Émail</th>
+                        <th>Statut actuel</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Karnash Drul Fashion</strong></td>
+                        <td>Roitelet</td>
+                        <td>contact@karnash.com</td>
+                        <td><span class="status-badge active">Actif</span></td>
+                        <td><button class="btn-action"><i class="fa-solid fa-user-slash"></i> Bloquer</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 1. Configuration du graphique Hebdomadaire (Bâtonnets / Bar)
+        const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
+        new Chart(ctxWeekly, {
+            type: 'bar',
+            data: {
+                labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                datasets: [{
+                    label: 'Ventes ($ USD)',
+                    data: [120, 190, 80, 240, 300, 450, 210],
+                    backgroundColor: '#6a2b83', // Violet Vibrant
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 2. Configuration du graphique Mensuel (Ligne / Line courbe)
+        const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+        new Chart(ctxMonthly, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                datasets: [{
+                    label: 'Chiffre d\'affaires total ($)',
+                    data: [450, 680, 820, 950, 1100, 1240],
+                    borderColor: '#cca43b', // Or Élégant
+                    backgroundColor: 'rgba(204, 164, 59, 0.1)',
+                    tension: 0.4, // Rend la ligne courbée et fluide
+                    fill: true,
+                    pointBackgroundColor: '#1a0933'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // On cible ton bouton "Ajouter un Admin" en haut à droite
+        const btnAjouterAdmin = document.querySelector('.btn-add-admin') || document.querySelector('button[class*="Ajouter"]');
+        
+        if (btnAjouterAdmin) {
+            btnAjouterAdmin.addEventListener('click', function() {
+                const email = prompt("Entrez l'adresse email du nouvel administrateur :");
+                const password = prompt("Entrez le mot de passe du nouvel administrateur :");
+                
+                if (email && password) {
+                    // On enregistre les identifiants dans la mémoire du navigateur
+                    localStorage.setItem('adminEmail', email);
+                    localStorage.setItem('adminPassword', password);
+                    alert("Compte administrateur créé avec succès !");
+                } else {
+                    alert("Création annulée. L'email et le mot de passe sont obligatoires.");
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

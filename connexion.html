@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion</title>
+</head>
+<body>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Mot de passe">
+    <button id="btnConnexion">Se connecter</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+        const app = initializeApp({ /* TA CONFIG FIREBASE */ });
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        document.getElementById('btnConnexion').onclick = () => {
+// ... Tes imports en haut ...
+
+// Ligne 21 : Ton bouton existe déjà
+document.getElementById('btnConnexion').onclick = () => {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('password').value;
+
+    // Ligne 25 : C'est ici que tu remplaces le contenu
+    signInWithEmailAndPassword(auth, email, pass).then((cred) => {
+        const uid = cred.user.uid;
+
+        // 1. Vérification Admin
+        if (email === "ton-email@karnash.com") { // Remplace par ton vrai email admin
+            window.location.href = "dashboard-admin.html";
+        } 
+        // 2. Vérification Vendeur ou Client
+        else {
+            get(ref(db, 'boutiques/' + uid)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    window.location.href = "dashboard-vendeur.html";
+                } else {
+                    window.location.href = "boutiques.html"; // Client
+                }
+            });
+        }
+    }).catch(err => alert("Erreur : " + err.message));
+};
+    </script>
+</body>
+</html>
